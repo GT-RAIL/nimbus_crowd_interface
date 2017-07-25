@@ -13,9 +13,46 @@
 ?>   
 
 <?php
+// user id
+if (isset($appointment['Appointment']['user_id'])){
+    $user_id = $appointment['Appointment']['user_id'];
+}
+
+else if(isset($userId)) {
+    $user_id = $userId;
+} else if(isset($_GET['userid'])){
+    $user_id = $_GET['userid'];
+}
+else{
+    $user_id = '';
+}
+?>
+
+<?php
 //custom styling
 echo $this->Html->css('NimbusCrowdInterface');
+
+// Use the tutorial widget
+echo $this->Html->script('tutorial.js');
+
+//jquery
+echo $this->Html->script('jquery-1.11.0');
 ?>
+
+<script>
+$(function() {
+    // TODO: re-enable
+    $("#interface").hide();
+    $("#completed").hide();
+    $().tutorial({
+        onCompletion: function() {
+            $("#tutorial").hide();
+            $("#interface").show();
+
+        }
+    });
+});
+</script>
 
 <style type="text/css">
 	#header{
@@ -58,7 +95,88 @@ echo $this->Html->css('NimbusCrowdInterface');
 
 
 <body>
-	<table style="width:1280px !important; height:800px !important; margin-left:auto; margin-right:auto; border:1px solid black">
+
+
+<!-- tutorial sections -->
+    <section id="tutorial" data-num-slides="3">
+        <section id="tutorial-1" class="tutorial-section">
+            <p>In this experiment you will teach a robot arm how to put things away. You have just returned from a camping trip and you empty your bag on the table. </p>
+            <section style="text-align:center;">
+<?php
+echo $this->Html->image('nimbus-crowd-interface/camping.jpg', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Camping gear'
+));
+?>
+            </section>
+            <p>Use the interface to show the robot how to put away as many of the objects as you can.</p>
+        </section>
+
+        <section id="tutorial-2" class="tutorial-section">
+<?php
+echo $this->Html->image('nimbus-crowd-interface/grasp.gif', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Grasp objects'
+));
+?>
+            <p>Use <b>GRASP</b> mode to click an object and select a grasp.</p>
+            </section>
+        </section>
+
+        <section id="tutorial-3" class="tutorial-section">
+<?php
+echo $this->Html->image('nimbus-crowd-interface/place.gif', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Grasp objects'
+));
+?>
+            <p>Use <b>PLACE</b> mode to select a flat surface where you want to place an object.</p>
+            </section>
+        </section>
+
+
+        <section id="tutorial-4" class="tutorial-section">
+<?php
+echo $this->Html->image('nimbus-crowd-interface/move.gif', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Move the arm'
+));
+?>
+            <p>Use <b>MOVE</b> mode and click where you would like to move the arm.</p>
+            </section>
+        </section>
+
+        <section id="tutorial-5" class="tutorial-section">
+<?php
+echo $this->Html->image('nimbus-crowd-interface/place.gif', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Place objects'
+));
+?>
+            <p>If you get stuck or the arm won't move, use <b>RESET</b> to move the arm back to the starting position.</p>
+<?php
+echo $this->Html->image('nimbus-crowd-interface/open close.gif', array(
+    'class'=>'tutorial-image',
+    'width'=>'400',
+    'alt'=>'Open/close gripper'
+));
+?>
+            <p>Here you can also open and close the gripper.</p>
+            </section>
+        </section>
+
+
+
+
+    </section>
+
+
+	<table id="interface" style="width:1280px !important; height:800px !important; margin-left:auto; margin-right:auto; border:1px solid black">
 		<tr>
 			<td>
 				<table style="width:100% !important">
