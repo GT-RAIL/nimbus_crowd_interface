@@ -35,27 +35,33 @@ echo $this->Html->css('NimbusCrowdInterface');
 // Use the tutorial widget
 echo $this->Html->script('tutorial.js');
 
-//jquery
-echo $this->Html->script('jquery-1.11.0');
 ?>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 
 <script>
 $(function() {
-    // TODO: re-enable
-    $("#interface").hide();
-    $("#completed").hide();
-    $().tutorial({
-        onCompletion: function() {
-            $("#tutorial").hide();
-            $("#interface").show();
-
-        }
-    });
+  $('html, body').animate({
+    scrollTop: $("#interface-div").offset().top
+  }, 500);
+  $("#tutorial").hide();
+  // TODO: re-enable
+//    $("#interface").hide();
+//    $("#completed").hide();
+//    $().tutorial({
+//        onCompletion: function() {
+//            $("#tutorial").hide();
+//            $("#interface").show();
+//
+//        }
+//    });
 });
 </script>
 
 <style type="text/css">
-	#header{
+	/*
+    #header{
 		position: relative;
 	}
 	#mjpeg{
@@ -63,8 +69,9 @@ $(function() {
 	}
 	#mjpeg canvas{
 		position: absolute;
-	}
+	}*/
 </style>
+
 
 <html>
 <head>
@@ -95,10 +102,8 @@ $(function() {
 
 
 <body>
-
-
 <!-- tutorial sections -->
-    <section id="tutorial" data-num-slides="3">
+    <section id="tutorial" data-num-slides="5">
         <section id="tutorial-1" class="tutorial-section">
             <p>In this experiment you will teach a robot arm how to put things away. You have just returned from a camping trip and you empty your bag on the table. </p>
             <section style="text-align:center;">
@@ -122,7 +127,6 @@ echo $this->Html->image('nimbus-crowd-interface/grasp.gif', array(
 ));
 ?>
             <p>Use <b>GRASP</b> mode to click an object and select a grasp.</p>
-            </section>
         </section>
 
         <section id="tutorial-3" class="tutorial-section">
@@ -134,7 +138,6 @@ echo $this->Html->image('nimbus-crowd-interface/place.gif', array(
 ));
 ?>
             <p>Use <b>PLACE</b> mode to select a flat surface where you want to place an object.</p>
-            </section>
         </section>
 
 
@@ -147,7 +150,6 @@ echo $this->Html->image('nimbus-crowd-interface/move.gif', array(
 ));
 ?>
             <p>Use <b>MOVE</b> mode and click where you would like to move the arm.</p>
-            </section>
         </section>
 
         <section id="tutorial-5" class="tutorial-section">
@@ -167,335 +169,356 @@ echo $this->Html->image('nimbus-crowd-interface/open close.gif', array(
 ));
 ?>
             <p>Here you can also open and close the gripper.</p>
-            </section>
         </section>
-
-
-
-
     </section>
 
+    <div id="interface-div">
+        <!-- camera view, change view button, and status messages -->
+        <div id="interface-left">
+                <div id="camera-feed">
+                    <div id="mjpeg">
+                        <canvas id='mjpegcanvas'></canvas>
+                    </div>
+                </div>
+                <div id="change-view" style="text-align:center">
+                    <button id='changeView' class='button special' style="width:200px">change view</button>
+                </div>
+                <div id="feedback-flash">
+                    <div id="feedback">
+                        <b><span id="feedback-text">&nbsp;</span></b>
+                    </div>
+                </div>
+            </div>
+        <!-- button panel -->
+		<div id="controls">
+            <div class="control-buttons">
+                <div class="control-buttons-row">
+                    <button id='graspMode' class='button special'>Grasp</button>
+                    <button id='placeMode' class='button special'>Place</button>
+                </div>
+                <div class="control-buttons-row">
+                    <button id='moveMode' class='button special'>Move</button>
+                    <button id='commonMode' class='button special'>Common</button>
+                </div>
+            </div>
 
-	<table id="interface" style="width:1280px !important; height:800px !important; margin-left:auto; margin-right:auto; border:1px solid black">
+
+				<table>
+					<tr>
+						<td>
+                            <!--
+											<table>
+												<tr>
+													<td style="width:50%; text-align:center">
+														<button id='graspMode' class='button special' style="width:150px">Grasp</button>
+													</td>
+													<td style="text-align:center">
+														<button id='placeMode' class='button special' style="width:150px">Place</button>
+													</td>
+												</tr>
+												<tr>
+													<td style="text-align:center">
+														<button id='moveMode' class='button special' style="width:150px">Move</button>
+													</td>
+													<td style="text-align:center">
+														<button id='commonMode' class='button special' style="width:150px">Common</button>
+													</td>
+												</tr>
+											</table>
+
+								-->
+											<hr style="margin-bottom:10px;" />
+										</td>
+									</tr>
+									<tr>
+										<td style="text-align:center">
+											<b><span id="current-mode">&nbsp;</span></b>
+
+											<div id="mode-grasp" style="display:none">
+												<table style="width:100% !important">
+													<tr>
+														<td style="line-height:110%;">
+															<b>Click on the camera feed</b> to calculate grasp suggestions. <b>Cycle through</b> suggestions with the arrows below.
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<table style="width:100% !important">
+																<tr>
+																	<td style="text-align:right">
+																		<map name="prev-map">
+																			<area shape="rect" coords="0,0,75,50" href="javascript:prevPose()">
+																		</map>
+																		<img id="img-prev-grasp" src="/img/Nimbus/nimbus-prev.png" height="50" width="75" style="vertical-align:middle" usemap="prev-map">
+																	</td>
+																	<td style="text-align:left">
+																		<map name="next-map">
+																			<area shape="rect" coords="0,0,75,50" href="javascript:nextPose()">
+																		</map>
+																		<img id="img-next-grasp" src="/img/Nimbus/nimbus-next.png" height="50" width="75" style="vertical-align:middle" usemap="next-map">
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<table style="width:100% !important">
+																<tr>
+																	<td>
+																		<map name="refine-pose-map">
+																			<area shape="rect" coords="0,0,150,100" href="javascript:enableRefine()">
+																		</map>
+																		<img id="img-refine-pose" src="/img/Nimbus/nimbus-refine-pose.png" height="100" width="150" style="vertical-align:middle" usemap="refine-pose-map">
+																	</td>
+																	<td>
+																		<map name="plan-map">
+																			<area shape="rect" coords="0,0,150,100" href="javascript:executePose(0)">
+																		</map>
+																		<img id="img-plan-grasp" src="/img/Nimbus/nimbus-plan.png" height="100" width="150" style="vertical-align:middle" usemap="plan-map">
+																	</td>
+																</tr>
+																<tr>
+																	<td style="vertical-align:middle;">
+																		<button id='refineGrasp' class='button special' style="width:150px">refine</button>
+																	</td>
+																	<td style="vertical-align:middle;">
+																		<button id='executeGrasp' class='button special' style="width:150px">execute</button>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</div>
+
+											<div id="mode-place" style="display:none">
+												<table style="width:100% !important">
+													<tr>
+														<td style="line-height:110%;">
+															<b>Click on the camera feed</b> to calculate place suggestions. <b>Cycle through</b> suggestions with the arrows below.
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<table style="width:100% !important">
+																<tr>
+																	<td style="text-align:right">
+																		<map name="prev-place-map">
+																			<area shape="rect" coords="0,0,75,50" href="javascript:prevPose()">
+																		</map>
+																		<img id="img-prev-place" src="/img/Nimbus/nimbus-prev.png" height="50" width="75" style="vertical-align:middle" usemap="prev-place-map">
+																	</td>
+																	<td style="text-align:left">
+																		<map name="next-place-map">
+																			<area shape="rect" coords="0,0,75,50" href="javascript:nextPose()">
+																		</map>
+																		<img id="img-next-place" src="/img/Nimbus/nimbus-next.png" height="50" width="75" style="vertical-align:middle" usemap="next-place-map">
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<table style="width:100% !important;">
+																<tr>
+																	<td>
+																		<map name="refine-place-map">
+																			<area shape="rect" coords="0,0,150,100" href="javascript:enableRefine()">
+																		</map>
+																		<img id="img-refine-place" src="/img/Nimbus/nimbus-refine-place.png" height="100" width="150" style="vertical-align:middle" usemap="refine-place-map">
+																	</td>
+																	<td>
+																		<map name="plan-place-map">
+																			<area shape="rect" coords="0,0,150,100" href="javascript:executePose(1)">
+																		</map>
+																		<img id="img-plan-place" src="/img/Nimbus/nimbus-move-to-place.png" height="100" width="150" style="vertical-align:middle" usemap="plan-place-map">
+																	</td>
+																</tr>
+																<tr>
+																	<td style="vertical-align:middle;">
+																		<button id='refinePlace' class='button special' style="width:150px">refine</button>
+																	</td>
+																	<td style="vertical-align:middle;">
+																		<button id='executePlace' class='button special' style="width:150px">execute</button>
+																	</td>
+																</tr>
+															</table>
+														</td>
+												</table>
+											</div>
+
+											<div id="mode-move" style="display:none">
+												<table style="width:100% !important;">
+													<tr>
+														<td>
+															<table style="width:100% !important">
+																<tr>
+																	<td>
+																		<img id="img-move-side" src="/img/Nimbus/nimbus-move-side.png" height="100" width="150" style="vertical-align:middle">
+																	</td>
+																	<td>
+																		<img id="img-move-top" src="/img/Nimbus/nimbus-move-top.png" height="100" width="150" style="vertical-align:middle">
+																	</td>
+																</tr>
+															</table>
+
+															<br />
+														</td>
+													</tr>
+													<tr>
+														<td style="line-height:110%;">
+															<b>Click on the camera feed</b> to move the arm to the point you clicked.
+															<br /><br />
+														</td>
+													</tr>
+													<tr>
+														<td style="line-height:110%;">
+															The arm will move in a <b>straight line</b> to the clicked point.
+															<br /><br />
+														</td>
+													</tr>
+													<tr>
+														<td style="line-height:110%;">
+															<b>The arm will not avoid collisions!</b>
+															<br /><br />
+														</td>
+													</tr>
+												</table>
+											</div>
+
+											<div id="mode-common" style="display:none">
+												<table style="width:100% !important;">
+													<tr>
+														<td>
+															<map name="gripper-map">
+																<area shape="rect" coords="0,0,45,100" href="javascript:executeOpenGripper()">
+																<area shape="rect" coords="46,0,104,100" href="javascript:executeCloseGripper()">
+																<area shape="rect" coords="105,0,150,100" href="javascript:executeOpenGripper()">
+															</map>
+															<img id="img-gripper" src="/img/Nimbus/nimbus-gripper.png" height="100" width="150" style="vertical-align:middle" usemap="#gripper-map">
+														</td>
+														<td>
+															<map name="reset-map">
+																<area shape="rect" coords="0,0,150,100" href="javascript:executeResetArm()">
+															</map>
+															<img id="img-reset" src="/img/Nimbus/nimbus-reset-arm.png" height="100" width="150" style="vertical-align:middle" usemap="#reset-map">
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<button id='openGripper' class='button special' style="width:150px; margin-left:auto !important; margin-right:auto !important;">open</button>
+														</td>
+														<td style="text-align:center; vertical-align:middle;">
+															<button id='resetArm' class='button special' style="width:150px">reset arm</button>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<button id='closeGripper' class='button special' style="width:150px; margin-left:auto !important; margin-right:auto !important;">close</button>
+														</td>
+														<td></td>
+													</tr>
+												</table>
+											</div>
+											<hr style="margin-bottom:10px;" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+
+											<div id="refine-mode" style="display:none;">
+												<table style="width:100% !important;">
+													<tr>
+														<td>
+															<div id="refine-point" style="display:none;">
+																<table style="width:100% !important;">
+																	<tr>
+																		<td style="text-align:center;">
+																			<img id="img-refine-point" src="/img/Nimbus/nimbus-refine-point.png" height="100" width="150" style="vertical-align:middle">
+																		</td>
+																	</tr>
+																	<tr>
+																		<td style="line-height:110%; text-align:center">
+																			<b>Click and drag</b> the arrows around the purple gripper to change the <b>center point</b>.
+																		</td>
+																	</tr>
+																</table>
+															</div>
+															<div id="refine-angle" style="display:none;">
+																<table style="width:100% !important;">
+																	<tr>
+																		<td style="text-align:center;">
+																			<img id="img-refine-angle" src="/img/Nimbus/nimbus-refine-angle.png" height="100" width="150" style="vertical-align:middle">
+																		</td>
+																	</tr>
+																	<tr>
+																		<td style="line-height:110%; text-align:center;">
+																			<b>Click and drag</b> the arrows around the purple gripper to change the <b>grasp angle</b>.
+																		</td>
+																	</tr>
+																</table>
+															</div>
+															<div id="refine-wrist" style="display:none;">
+																<table style="width:100% !important;">
+																	<tr>
+																		<td style="text-align:center;">
+																			<img id="img-refine-wrist" src="/img/Nimbus/nimbus-refine-wrist.png" height="100" width="150" style="vertical-align:middle">
+																		</td>
+																	</tr>
+																	<tr>
+																		<td style="line-height:110%; text-align:center;">
+																			<b>Click and drag</b> the ring and arrow around the purple gripper to change the <b>wrist rotation</b> and <b>grasp depth</b>.
+																		</td>
+																	</tr>
+																</table>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<table style="width:100% !important">
+																<tr>
+																	<td><button id='refinePrev' class='button special' style="width:90px;">prev</button></td>
+																	<td><button id='refineNext' class='button special' style="width:90px;">next</button></td>
+																	<td><button id='refineDone' class='button special' style="width:90px;">done</button></td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>
+        </div>
+    </div>
+
+<br/>
+<hr/>
+<br/>
+
+
+	<table id="interface">
 		<tr>
 			<td>
 				<table style="width:100% !important">
 					<tr>
 						<td>
-							<div id="camera-feed" style="height:619px; margin:5px">
-								<div id="mjpeg">
-									<canvas id='mjpegcanvas'></canvas>
-								</div>
-							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div id="change-view" style="text-align:center">
-								<button id='changeView' class='button special' style="width:200px">change view</button>
-							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div id="feedback-flash"  style="line-height:88px; position:relative;  text-align:center; background-color:rgba(232, 138, 144, 1.0); border-radius:24px; margin:5px">
-							<div id="feedback"  style="line-height:88px; position:relative;  text-align:center; background-color:rgba(232, 238, 244, 1.0); border-radius:20px; margin:0px">
-								<b><span id="feedback-text" style="display: inline-block; vertical-align: middle; line-height:1em">&nbsp;</span></b>
-							</div>
-							</div>
 						</td>
 					</tr>
 				</table>
 			</td>
 			<td style="width: 33%; vertical-align:top;">
-			<div id="controls" style="height:780px; text-align: left; background-color:rgba(232, 238, 244, 1.0); border-radius:20px; margin:5px; padding:20px">
-				<table style="width:100% !important;">
-					<tr>
-						<td>
-							<table style="width:100% !important;">
-								<tr>
-									<td style="width:50%; text-align:center">
-										<button id='graspMode' class='button special' style="width:150px">Grasp</button>
-									</td>
-									<td style="text-align:center">
-										<button id='placeMode' class='button special' style="width:150px">Place</button>
-									</td>
-								</tr>
-								<tr>
-									<td style="text-align:center">
-										<button id='moveMode' class='button special' style="width:150px">Move</button>
-									</td>
-									<td style="text-align:center">
-										<button id='commonMode' class='button special' style="width:150px">Common</button>
-									</td>
-								</tr>
-							</table>
-							<hr style="margin-bottom:10px;" />
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align:center">
-							<b><span id="current-mode">&nbsp;</span></b>
-
-							<div id="mode-grasp" style="display:none">
-								<table style="width:100% !important">
-									<tr>
-										<td style="line-height:110%;">
-											<b>Click on the camera feed</b> to calculate grasp suggestions. <b>Cycle through</b> suggestions with the arrows below.
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<table style="width:100% !important">
-												<tr>
-													<td style="text-align:right">
-														<map name="prev-map">
-															<area shape="rect" coords="0,0,75,50" href="javascript:prevPose()">
-														</map>
-														<img id="img-prev-grasp" src="/img/Nimbus/nimbus-prev.png" height="50" width="75" style="vertical-align:middle" usemap="prev-map">
-													</td>
-													<td style="text-align:left">
-														<map name="next-map">
-															<area shape="rect" coords="0,0,75,50" href="javascript:nextPose()">
-														</map>
-														<img id="img-next-grasp" src="/img/Nimbus/nimbus-next.png" height="50" width="75" style="vertical-align:middle" usemap="next-map">
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<table style="width:100% !important">
-												<tr>
-													<td>
-														<map name="refine-pose-map">
-															<area shape="rect" coords="0,0,150,100" href="javascript:enableRefine()">
-														</map>
-														<img id="img-refine-pose" src="/img/Nimbus/nimbus-refine-pose.png" height="100" width="150" style="vertical-align:middle" usemap="refine-pose-map">
-													</td>
-													<td>
-														<map name="plan-map">
-															<area shape="rect" coords="0,0,150,100" href="javascript:executePose(0)">
-														</map>
-														<img id="img-plan-grasp" src="/img/Nimbus/nimbus-plan.png" height="100" width="150" style="vertical-align:middle" usemap="plan-map">
-													</td>
-												</tr>
-												<tr>
-													<td style="vertical-align:middle;">
-														<button id='refineGrasp' class='button special' style="width:150px">refine</button>
-													</td>
-													<td style="vertical-align:middle;">
-														<button id='executeGrasp' class='button special' style="width:150px">execute</button>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</div>
-
-							<div id="mode-place" style="display:none">
-								<table style="width:100% !important">
-									<tr>
-										<td style="line-height:110%;">
-											<b>Click on the camera feed</b> to calculate place suggestions. <b>Cycle through</b> suggestions with the arrows below.
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<table style="width:100% !important">
-												<tr>
-													<td style="text-align:right">
-														<map name="prev-place-map">
-															<area shape="rect" coords="0,0,75,50" href="javascript:prevPose()">
-														</map>
-														<img id="img-prev-place" src="/img/Nimbus/nimbus-prev.png" height="50" width="75" style="vertical-align:middle" usemap="prev-place-map">
-													</td>
-													<td style="text-align:left">
-														<map name="next-place-map">
-															<area shape="rect" coords="0,0,75,50" href="javascript:nextPose()">
-														</map>
-														<img id="img-next-place" src="/img/Nimbus/nimbus-next.png" height="50" width="75" style="vertical-align:middle" usemap="next-place-map">
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<table style="width:100% !important;">
-												<tr>
-													<td>
-														<map name="refine-place-map">
-															<area shape="rect" coords="0,0,150,100" href="javascript:enableRefine()">
-														</map>
-														<img id="img-refine-place" src="/img/Nimbus/nimbus-refine-place.png" height="100" width="150" style="vertical-align:middle" usemap="refine-place-map">
-													</td>
-													<td>
-														<map name="plan-place-map">
-															<area shape="rect" coords="0,0,150,100" href="javascript:executePose(1)">
-														</map>
-														<img id="img-plan-place" src="/img/Nimbus/nimbus-move-to-place.png" height="100" width="150" style="vertical-align:middle" usemap="plan-place-map">
-													</td>
-												</tr>
-												<tr>
-													<td style="vertical-align:middle;">
-														<button id='refinePlace' class='button special' style="width:150px">refine</button>
-													</td>
-													<td style="vertical-align:middle;">
-														<button id='executePlace' class='button special' style="width:150px">execute</button>
-													</td>
-												</tr>
-											</table>
-										</td>
-								</table>
-							</div>
-
-							<div id="mode-move" style="display:none">
-								<table style="width:100% !important;">
-									<tr>
-										<td>
-											<table style="width:100% !important">
-												<tr>
-													<td>
-														<img id="img-move-side" src="/img/Nimbus/nimbus-move-side.png" height="100" width="150" style="vertical-align:middle">
-													</td>
-													<td>
-														<img id="img-move-top" src="/img/Nimbus/nimbus-move-top.png" height="100" width="150" style="vertical-align:middle">
-													</td>
-												</tr>
-											</table>
-
-											<br />
-										</td>
-									</tr>
-									<tr>
-										<td style="line-height:110%;">
-											<b>Click on the camera feed</b> to move the arm to the point you clicked.
-											<br /><br />
-										</td>
-									</tr>
-									<tr>
-										<td style="line-height:110%;">
-											The arm will move in a <b>straight line</b> to the clicked point.
-											<br /><br />
-										</td>
-									</tr>
-									<tr>
-										<td style="line-height:110%;">
-											<b>The arm will not avoid collisions!</b>
-											<br /><br />
-										</td>
-									</tr>
-								</table>
-							</div>
-
-							<div id="mode-common" style="display:none">
-								<table style="width:100% !important;">
-									<tr>
-										<td>
-											<map name="gripper-map">
-												<area shape="rect" coords="0,0,45,100" href="javascript:executeOpenGripper()">
-												<area shape="rect" coords="46,0,104,100" href="javascript:executeCloseGripper()">
-												<area shape="rect" coords="105,0,150,100" href="javascript:executeOpenGripper()">
-											</map>
-											<img id="img-gripper" src="/img/Nimbus/nimbus-gripper.png" height="100" width="150" style="vertical-align:middle" usemap="#gripper-map">
-										</td>
-										<td>
-											<map name="reset-map">
-												<area shape="rect" coords="0,0,150,100" href="javascript:executeResetArm()">
-											</map>
-											<img id="img-reset" src="/img/Nimbus/nimbus-reset-arm.png" height="100" width="150" style="vertical-align:middle" usemap="#reset-map">
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<button id='openGripper' class='button special' style="width:150px; margin-left:auto !important; margin-right:auto !important;">open</button>
-										</td>
-										<td style="text-align:center; vertical-align:middle;">
-											<button id='resetArm' class='button special' style="width:150px">reset arm</button>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<button id='closeGripper' class='button special' style="width:150px; margin-left:auto !important; margin-right:auto !important;">close</button>
-										</td>
-										<td></td>
-									</tr>
-								</table>
-							</div>
-							<hr style="margin-bottom:10px;" />
-						</td>
-					</tr>
-					<tr>
-						<td>
-
-							<div id="refine-mode" style="display:none;">
-								<table style="width:100% !important;">
-									<tr>
-										<td>
-											<div id="refine-point" style="display:none;">
-												<table style="width:100% !important;">
-													<tr>
-														<td style="text-align:center;">
-															<img id="img-refine-point" src="/img/Nimbus/nimbus-refine-point.png" height="100" width="150" style="vertical-align:middle">
-														</td>
-													</tr>
-													<tr>
-														<td style="line-height:110%; text-align:center">
-															<b>Click and drag</b> the arrows around the purple gripper to change the <b>center point</b>.
-														</td>
-													</tr>
-												</table>
-											</div>
-											<div id="refine-angle" style="display:none;">
-												<table style="width:100% !important;">
-													<tr>
-														<td style="text-align:center;">
-															<img id="img-refine-angle" src="/img/Nimbus/nimbus-refine-angle.png" height="100" width="150" style="vertical-align:middle">
-														</td>
-													</tr>
-													<tr>
-														<td style="line-height:110%; text-align:center;">
-															<b>Click and drag</b> the arrows around the purple gripper to change the <b>grasp angle</b>.
-														</td>
-													</tr>
-												</table>
-											</div>
-											<div id="refine-wrist" style="display:none;">
-												<table style="width:100% !important;">
-													<tr>
-														<td style="text-align:center;">
-															<img id="img-refine-wrist" src="/img/Nimbus/nimbus-refine-wrist.png" height="100" width="150" style="vertical-align:middle">
-														</td>
-													</tr>
-													<tr>
-														<td style="line-height:110%; text-align:center;">
-															<b>Click and drag</b> the ring and arrow around the purple gripper to change the <b>wrist rotation</b> and <b>grasp depth</b>.
-														</td>
-													</tr>
-												</table>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<table style="width:100% !important">
-												<tr>
-													<td><button id='refinePrev' class='button special' style="width:90px;">prev</button></td>
-													<td><button id='refineNext' class='button special' style="width:90px;">next</button></td>
-													<td><button id='refineDone' class='button special' style="width:90px;">done</button></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
 			</td>
 		</tr>
 	</table>
@@ -507,7 +530,7 @@ echo $this->Html->image('nimbus-crowd-interface/open close.gif', array(
 	 ****************************************************************************/
 	RMS.logString('new-session', 'nimbus-crowd-interface');
 
-	var size = Math.min(((window.innerWidth / 2) - 120), window.innerHeight * 0.60);
+	//var size = Math.min(((window.innerWidth / 2) - 120), window.innerHeight * 0.60);
 	
 
 </script>
@@ -1124,7 +1147,7 @@ echo $this->Html->image('nimbus-crowd-interface/open close.gif', array(
 	/****************************************************************************
 	 *                              Setup                                       *
 	 ****************************************************************************/
-	var size = 826;
+	var size = Math.floor(parseFloat($("#mjpegcanvas").css("width")));
 	<?php
 		$streamTopics = '[';
 		$streamNames = '[';

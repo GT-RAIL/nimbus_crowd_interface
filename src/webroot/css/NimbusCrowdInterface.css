@@ -1,13 +1,94 @@
+*{box-sizing: border-box; padding: 0; margin: 0} /*reset*/
+
+#main{
+  padding-top: 2.5em;
+}
+
+#header{
+  position: relative;
+}
+
+#interface-div{
+  min-height: 100vh;
+  width: 100vw;
+  border: 1px solid red;
+}
+
+#interface-left{
+  vertical-align: top;
+  width: calc(70vw - 40px);
+  height: calc(100vh - 20px);
+  display: inline-block;
+  margin: 20px 10px;
+  border: 1px solid green;
+}
+
+#camera-feed, #mjpeg{
+  position: relative;
+  height: calc(50vw * 0.75 + 2px);
+}
+
+#mjpeg > canvas{
+  position: absolute;
+  width:100%;
+}
+
+#controls{
+  vertical-align: top;
+  width: calc(30vw - 40px);
+  height: calc(100vh - 20px);
+  display: inline-block;
+  margin: 20px 10px;
+  border: 1px solid blue;
+}
+
+.control-buttons{
+  width: 100%;
+  display: table;
+}
+.control-buttons-row{
+  display: table-row;
+}
+
+
+#feedback-flash{
+  line-height:88px;
+  position:relative;
+  text-align:center;
+  background-color:rgba(232, 138, 144, 1.0);
+  border-radius:24px;
+  margin:5px;
+}
+
+#feedback{
+  line-height:88px;
+  position:relative;
+  text-align:center;
+  background-color: rgba(232, 238, 244, 1.0);
+  border-radius:20px;
+  margin:0px;
+}
+
+#feedback-text{
+  display: inline-block;
+  vertical-align: middle;
+  line-height:1em;
+}
+
+
+/*
 html, body{
 	max-width: 100%;
 }
 
 table, th, td{
 	border: none;
-  /*border: 1px solid black;*/
+  border: 1px solid black;
 }
-
+*/
+/*
 table {
+    height: 100vh;
 	width: auto !important;
 	table-layout: fixed;
 	margin-bottom: 0;
@@ -24,11 +105,13 @@ li {
 	margin-bottom:10px;
 	line-height:120%;
 }
+*/
 
 .button {
-	min-width: 75px;
-	margin: 5px;
-	cursor:pointer;
+  width: calc(50% - 12px);
+  margin: 5px;
+  min-width: 75px;
+  cursor:pointer;
 }
 
 .button:disabled {
